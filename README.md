@@ -11,11 +11,17 @@
 ### 2.配置 Hadoop
 
 #### Hadoop 环境配置
-输入命令：
+输入命令：`vim ~/.bash_profile`
+
+在profile中添加：
 
 ```
-export HADOOP_HOME=/Users/ponta/hadoopwork/hadoop-2.7.5
-export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+# Hadoop
+export JRE_HOME=$JAVA_HOME/jre
+export HADOOP_HOME=/Users/ponta/hadoopworker/hadoop-2.7.5
+export CLASSPATH=$JAVA_HOME/lib:$JRE_HOME/lib:$CLASSPATH
+export HADOOP_HOME_WARN_SUPPRESS=1
+export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$HADOOP_HOME/bin:$PATH
 ```
 检验Hadoop是否配置成功：
 
