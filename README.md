@@ -1,19 +1,16 @@
 # Hadoop-Installation-on-Mac-OS-X
 
+### 1.Dowload and Decompress the Hadoop.tar
+>Download Link: <http://mirrors.shu.edu.cn/apache/hadoop/common/hadoop-2.7.5/hadoop-2.7.5.tar.gz> 
 
-# macOS 下 Hadoop 的安装和配置
+Put **hadoop-2.7.5** into  **/User/ponta/hadoopworker/** 
 
-### 1.下载解压 Hadoop tar 包
->下载链接: <http://mirrors.shu.edu.cn/apache/hadoop/common/hadoop-2.7.5/hadoop-2.7.5.tar.gz> 
+### 2 The Configuration Of Hadoop 
 
-将解压后的文件 **hadoop-2.7.5** 放在 **/User/ponta/hadoopworker/** 目录下
+#### Hadoop Enviroment
+Input command：`vim ~/.bash_profile`
 
-### 2.配置 Hadoop
-
-#### Hadoop 环境配置
-输入命令：`vim ~/.bash_profile`
-
-在profile中添加：
+Insert the following statements to the profile:
 
 ```
 # Hadoop
@@ -23,11 +20,11 @@ export CLASSPATH=$JAVA_HOME/lib:$JRE_HOME/lib:$CLASSPATH
 export HADOOP_HOME_WARN_SUPPRESS=1
 export PATH=$JAVA_HOME/bin:$JRE_HOME/bin:$HADOOP_HOME/bin:$PATH
 ```
-检验Hadoop是否配置成功：
+Check if Hadoop has been installed, input command:
 
 `Hadoop version`
 
-运行结果：
+Execute result:
 
 ```
 Hadoop 2.7.5
@@ -38,7 +35,7 @@ From source with checksum 9f118f95f47043332d51891e37f736e9
 This command was run using /Users/ponta/hadoopworker/hadoop-2.7.5/share/hadoop/common/hadoop-common-2.7.5.jar
 ```
 
-#### 修改配置文件
+#### Update Configuration Files
 1.core-site.xml
 
 ```
@@ -65,7 +62,7 @@ This command was run using /Users/ponta/hadoopworker/hadoop-2.7.5/share/hadoop/c
 ```
 3.mapred-site.xml
 
-打开 mapred-site.xml.template(可以使用 文本编辑 工具)，新建 mapred-site.xml。
+Open mapred-site.xml.template(By TextEdit Or...)，create mapred-site.xml:
 
 ```
 <configuration>
@@ -87,32 +84,32 @@ This command was run using /Users/ponta/hadoopworker/hadoop-2.7.5/share/hadoop/c
 </configuration>
 ```
 
-### 3.SSH免密登陆
-#### 1.打开远程登陆
->系统偏好设置 --> 共享 ---> 远程登陆 
+### 3.SSH Login Without Password
+#### 1.Open Remote Login
+>System Preferences --> Sharing ---> Remote Login
 
-输入命令判断是否开启远程登陆：
+Check if open Remote Login:
 
 `systemsetUp -getremotelogin`
 
-运行结果：
+Execute result：
 
 `You need administrator access to run this tool... exiting!`
 
-2.生成密钥对
+2.Generate a key pair
 
-输入命令：
+Input command：
 
 ```
 ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa
 cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys
 ```
 
-### 4.启动Hadoop，在hadoop-2.7.5目录下输入命令：
+### 4.Start Hadoop, input command in the directory hadoop-2.7.5 
 
 `sbin/start-dfs.sh  `
 
-运行结果：
+Execute result：
 
 ```
 18/11/01 17:14:22 DEBUG util.Shell: setsid is not available on this machine. So not using it.
@@ -141,12 +138,15 @@ cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys
 Starting namenodes on [localhost]
 ```
 
-修改日志文件：etc/hadoop/log4j.properties, 使直接显示错误，不显示警告。添加：
+Update log file：etc/hadoop/log4j.properties to make terminal report error only(Not included warning). 
+Insert the following statement to log file：
 `
 log4j.logger.org.apache.hadoop.util.NativeCodeLoader=ERROR
 `
+Restart Hadoop:
+`sbin/start-dfs.sh`
 
-sbin/start-dfs.sh 运行结果：
+Execute result：
 
 ```
 PontadeMacBook-Pro:hadoop-2.7.5 ponta$ sbin/start-dfs.sh
@@ -160,11 +160,11 @@ Password:
 0.0.0.0: starting secondarynamenode, logging to /Users/ponta/hadoopworker/hadoop-2.7.5/logs/hadoop-ponta-secondarynamenode-PontadeMacBook-Pro.local.out
 ```
   
-在hadoop-2.7.5目录下输入命令：
+Input command in the directory hadoop-2.7.5:
   
 `sbin/start-yarn.sh`
 
-运行结果：
+Execute result：
 
 ```
 starting yarn daemons
@@ -173,8 +173,8 @@ Password:
 localhost: nodemanager running as process 46652. Stop it first.
 ```
 
-输入命令：`jps`
-输出结果：
+Input command：`jps`
+Execute result：
 
 ```
 52530 SecondaryNameNode
@@ -183,11 +183,13 @@ localhost: nodemanager running as process 46652. Stop it first.
 52815 NodeManager
 52927 Jps
 ```
-运行成功。
+It means execute successfully.
 
-尝试打开 localhost:50070 和 localhost:8088，找不到 localhost:50070 网页，localhost:8088正常。
+Try to open localhost:50070 and localhost:8088 in browser. localhost:50070 not found ，but localhost:8088 runs normally.
  
-关闭Hadoop, 输入命令：`sbin/stop-all.sh` 输出结果：
+Stop Hadoop, input command：`sbin/stop-all.sh` 
+
+Execute result：
 
 ```
 This script is Deprecated. Instead use stop-dfs.sh and stop-yarn.sh
@@ -205,18 +207,17 @@ Password:
 localhost: stopping nodemanager
 no proxyserver to stop
 ```
-Hadoop 没有正常关闭。
+Hadoop can't not be stopped. There are some issues.
 
-解决方法：
-删除所有/tmp中的内容：
+The solution：Delete all content from /tmp:
 
 `rm -Rf /app/hadoop/tmp `
 
-格式化 namenode server：
+ Format the namenode server namenode server：
 
 `bin/hadoop namenode -format`
 
-重新启动Hadoop，尝试打开 localhost:50070 正常。
+Restart Hadoop, localhost:50070 runs normally.。
 
-参考链接：<https://stackoverflow.com/questions/33772495/no-namenode-or-datanode-or-secondary-namenode-to-stop>
+Reference Link：<https://stackoverflow.com/questions/33772495/no-namenode-or-datanode-or-secondary-namenode-to-stop>
 
